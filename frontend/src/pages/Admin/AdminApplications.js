@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaDownload, FaArrowLeft } from "react-icons/fa"; // Import icons
+import { FaDownload, FaArrowLeft } from "react-icons/fa"; 
 import Navbar from "../../components/templates/AdminNavbar";
 import Footer from "../../components/templates/Footer";
 import Sidebar from "../../components/templates/ASidebar";
@@ -10,17 +10,14 @@ const AdminApplications = () => {
   const { jobId } = useParams();
   const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
-  const [jobTitle, setJobTitle] = useState(""); // State to hold job title
+  const [jobTitle, setJobTitle] = useState("Loading...");
 
   useEffect(() => {
-    // Fetch applications and job title
-    fetch(`http://localhost:7000/admin/applications/${jobId}`)
+    fetch(`http://localhost:7000/api/admin/applications/${jobId}`)
       .then((response) => response.json())
       .then((data) => {
         setApplications(data);
-        if (data.length > 0) {
-          setJobTitle(data[0].job_title); // Set the job title from the first application
-        }
+        setJobTitle(data[0]?.job_title || "Job Title Not Available");
       })
       .catch((err) => console.error("Error fetching applications:", err));
   }, [jobId]);
@@ -31,9 +28,8 @@ const AdminApplications = () => {
       <div className="admin-overview-content">
         <Sidebar />
         <div className="admin-overview-container">
-          {/* Back Button with Icon */}
           <div className="title-container">
-            <FaArrowLeft className="back-icon" onClick={() => navigate("/Admin-over-viewpage")} />
+            <FaArrowLeft className="back-icon" onClick={() => navigate("/admin-overview")} />
             <h2>{jobTitle}</h2>
           </div>
 
@@ -55,13 +51,13 @@ const AdminApplications = () => {
                   <td>{app.mobile_number}</td>
                   <td>{app.email}</td>
                   <td>
-                    <a
-                      href={`http://localhost:7000/uploads/${app.cv_resume}`}
-                      download
-                      className="download-link"
-                    >
-                      Download CV <FaDownload className="download-icon" />
-                    </a>
+                    {app.cv_resume ? (
+                      <a href={`http://localhost:7000/api/uploads/${app.cv_resume}`} download>
+                        Download CV <FaDownload className="download-icon" />
+                      </a>
+                    ) : (
+                      <span>No CV Uploaded</span>
+                    )}
                   </td>
                 </tr>
               ))}

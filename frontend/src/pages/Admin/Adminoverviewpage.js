@@ -11,27 +11,34 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Fetch posted jobs
-    fetch("http://localhost:7000/admin/postedjobs")
+    fetch("http://localhost:7000/api/admin/postedjobs")
       .then((response) => response.json())
       .then((data) => setPostedJobs(data))
       .catch((err) => console.error("Error fetching posted jobs:", err));
 
-    // Fetch total applications
-    fetch("http://localhost:7000/admin/applications/count")
+    // Fetch total applications count
+    fetch("http://localhost:7000/api/admin/applications/count")
       .then((response) => response.json())
       .then((data) => setTotalApplications(data.total))
-      .catch((err) => console.error("Error fetching applications:", err));
+      .catch((err) => console.error("Error fetching applications count:", err));
   }, []);
 
   const deleteJob = (jobId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this job?");
     
     if (confirmDelete) {
-      fetch(`http://localhost:7000/admin/postedjobs/${jobId}`, {
+      fetch(`http://localhost:7000/api/admin/postedjobs/${jobId}`, {
         method: "DELETE",
       })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Failed to delete job");
+          }
+          return response.json();
+        })
         .then(() => {
-          setPostedJobs(postedJobs.filter((job) => job.id !== jobId));
+          // Remove the deleted job from the list
+          setPostedJobs(postedJobs.filter((job) => job.job_id !== jobId));
         })
         .catch((err) => console.error("Error deleting job:", err));
     }
@@ -76,7 +83,7 @@ const AdminDashboard = () => {
               </thead>
               <tbody>
                 {postedJobs.map((job) => (
-                  <tr key={job.id}>
+                  <tr key={job.job_id}>
                     <td>{job.job_title}</td>
                     <td>{job.state}</td>
                     <td>{totalApplications} Applications</td>
@@ -84,14 +91,14 @@ const AdminDashboard = () => {
                       <button
                         className="view-btn"
                         onClick={() =>
-                          (window.location.href = `/admin/applications/${job.id}`)
+                          (window.location.href = `/admin/applications/${job.job_id}`)
                         }
                       >
                         View Applications
                       </button>
                       <button
                         className="delete-btn"
-                        onClick={() => deleteJob(job.id)}
+                        onClick={() => deleteJob(job.job_id)}
                       >
                         <FaTrashAlt />
                       </button>

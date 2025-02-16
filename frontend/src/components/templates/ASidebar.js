@@ -24,13 +24,13 @@ const ASidebar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/post-job" className="sidebar-link">
+          <Link to="/Admin-create-job" className="sidebar-link">
             <FaPlusCircle className="icon" />
             <span>Post a Job</span>
           </Link>
         </li>
         <li>
-          <Link to="/my-jobs" className="sidebar-link">
+          <Link to="/Admin_my_job" className="sidebar-link">
             <FaBriefcase className="icon" />
             <span>My Jobs</span>
           </Link>
